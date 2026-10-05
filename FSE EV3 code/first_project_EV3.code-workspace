@@ -1,0 +1,10 @@
+{
+	"folders": [
+		{
+			"path": "../first_project_EV3"
+		}
+	],
+	"settings": {
+		"debug.openDebug": "neverOpen"
+	}
+}
