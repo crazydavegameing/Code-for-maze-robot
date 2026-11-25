@@ -22,7 +22,7 @@ tuch_switch = TouchSensor(Port.S1)
 end_color = ColorSensor(Port.S2)
 gyro_sensor = GyroSensor(Port.S4, Direction.CLOCKWISE)
 x = gyro_sensor.angle()
-last_turn = True
+last_turn = False
 rotate_in = DataLog("rotation", name = "rotation", timestamp = False, extension = "txt", append = True)
 # Write your program here.
 ev3.speaker.beep()
@@ -32,35 +32,37 @@ gyro_sensor.reset_angle(0)
 
 
 def sensor_turn(clearance, turn_angle, last):
-
-    if obstacle_sensor.distance() > 450:
+    if obstacle_sensor.distance() > 450 and last == True:
         robot.drive(clearance,0)
-        wait(800)
+        wait(1800)
         gyro_sensor.reset_angle(0)
-        while(gyro_sensor.angle() > -90):
+        while(gyro_sensor.angle() > -85):
             robot.drive(0,-100)
         if obstacle_sensor.distance() > 450:
-            last_turn = False
+            last = False
+            ev3.speaker.beep()
     elif obstacle_sensor.distance() < 450:
-        last_turn = True
+        last = True
+    last_turn = last
 
     
 
 
 def tuch_sensor(clearance, turn_angle):
     if tuch_switch.pressed():
+        ev3.speaker.beep()
         robot.drive(clearance,0)
         wait(800)
         gyro_sensor.reset_angle(0)
-        while(gyro_sensor.angle() < 90):
+        while(gyro_sensor.angle() < 85):
             robot.drive(0,100)
             wait(10)
     gyro_sensor.reset_angle(0)
 
 
 def moveInALine():
+    gyro_sensor.reset_angle(0)
     x = gyro_sensor.angle()
-
     robot.drive(-100, x)
 
 
@@ -75,11 +77,10 @@ while True:
         ev3.speaker.beep(frequency=1000, duration=500)
         wait(60)
         ev3.speaker.beep(frequency=1000, duration=500)
-        wait(60)
 
     moveInALine()
-    #sensor_turn(-100, -170, last_turn)
-    #tuch_sensor(100, 170)
+    sensor_turn(-150, -170, last_turn)
+    tuch_sensor(100, 170)
 
 
     
